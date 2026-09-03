@@ -32,4 +32,9 @@ urlpatterns = [
         "api/plans/",
         include("plans.urls"),
     ),
+
+    path(
+    "api/places/",
+    include("places.urls"),
+    ),
 ]

@@ -34,10 +34,22 @@ class PlanCreateSerializer(serializers.ModelSerializer):
 class PlanListSerializer(serializers.ModelSerializer):
     place = serializers.SerializerMethodField()
 
+    requested_by_username = serializers.CharField(
+        source="requested_by.username",
+        read_only=True,
+    )
+
+    planner_username = serializers.CharField(
+        source="planner.username",
+        read_only=True,
+    )
+
     class Meta:
         model = Plan
         fields = [
             "id",
+            "requested_by_username",
+            "planner_username",
             "mood",
             "energy",
             "date",
@@ -69,6 +81,7 @@ class PlanListSerializer(serializers.ModelSerializer):
             "latitude": float(obj.place.latitude),
             "longitude": float(obj.place.longitude),
         }
+
 
 class PlanFinalizeSerializer(serializers.Serializer):
     place_id = serializers.IntegerField()
