@@ -65,3 +65,29 @@ def finalize_plan(*, plan, user, validated_data):
     plan.save()
 
     return plan
+
+def reveal_plan(*, plan, user):
+    if plan.requested_by_id != user.id:
+        raise ValueError(
+            "Only the person who requested the surprise can reveal it."
+        )
+
+    if plan.status != Plan.Status.PLANNED:
+        raise ValueError(
+            "This plan is not planned yet."
+        )
+
+    if plan.planning_type != Plan.PlanningType.SURPRISE:
+        raise ValueError(
+            "Only surprise plans can be revealed."
+        )
+
+    if plan.location_revealed:
+        raise ValueError(
+            "This surprise has already been revealed."
+        )
+
+    plan.location_revealed = True
+    plan.save(update_fields=["location_revealed"])
+
+    return plan
