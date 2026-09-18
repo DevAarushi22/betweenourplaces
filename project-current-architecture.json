@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Between Our Places — current backend",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/DevAarushi22/betweenourplaces.git",
+      "link_mode": "local-only",
+      "revision": "6bc41d7a832d124a95b182200ba50ac149891d3d"
+    },
+    "viewBox": [1260, 720]
+  },
+  "components": [
+    { "id": "member", "type": "external", "label": "Relationship member", "sublabel": "Authenticated session", "pos": [42, 287], "size": [150, 72] },
+    { "id": "drf", "type": "frontend", "label": "Django REST API", "sublabel": "Session-authenticated endpoints", "pos": [258, 287], "size": [170, 72], "sources": [{ "path": "backend/config/urls.py", "line": 20, "end_line": 33, "label": "API routing" }] },
+    { "id": "plans", "type": "backend", "label": "Plans module", "sublabel": "Create, list, and finalize", "pos": [500, 120], "size": [170, 72], "sources": [{ "path": "backend/plans/views.py", "line": 16, "end_line": 122, "label": "Plan views" }, { "path": "backend/plans/services.py", "line": 6, "end_line": 67, "label": "Planning rules" }] },
+    { "id": "places", "type": "backend", "label": "Places module", "sublabel": "Create, list, update, delete", "pos": [500, 480], "size": [170, 72], "sources": [{ "path": "backend/places/views.py", "line": 15, "end_line": 135, "label": "Place views" }] },
+    { "id": "relationships", "type": "backend", "label": "Relationships module", "sublabel": "Resolve member relationship", "pos": [760, 120], "size": [170, 72], "sources": [{ "path": "backend/relationships/services.py", "line": 8, "end_line": 11, "label": "Relationship lookup" }] },
+    { "id": "sqlite", "type": "database", "label": "SQLite database", "sublabel": "Users, relationships, places, plans", "pos": [1018, 287], "size": [190, 72], "sources": [{ "path": "backend/config/settings.py", "line": 75, "end_line": 80, "label": "Database config" }] }
+  ],
+  "connections": [
+    { "id": "member-api", "from": "member", "to": "drf", "label": "HTTP + session", "variant": "emphasis", "labelDy": -30 },
+    { "id": "api-plans", "from": "drf", "to": "plans", "label": "/api/plans/", "labelAt": [450, 225] },
+    { "id": "api-places", "from": "drf", "to": "places", "label": "/api/places/", "labelAt": [450, 455] },
+    { "id": "plans-relationship", "from": "plans", "to": "relationships", "label": "find member relationship", "labelDy": -30 },
+    { "id": "plans-db", "from": "plans", "to": "sqlite", "label": "plan + relationship records", "fromSide": "bottom", "toSide": "top", "via": [[585, 235], [1113, 235]], "labelAt": [820, 225] },
+    { "id": "places-db", "from": "places", "to": "sqlite", "label": "place records", "fromSide": "right", "toSide": "bottom", "via": [[700, 516], [1113, 516]], "labelAt": [900, 530] }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "What it does", "items": ["Lets an authenticated person manage places shared with their relationship", "Lets relationship members create date plans, including a surprise-planning flow"] },
+    { "dot": "amber", "title": "Current boundaries", "items": ["API uses Django REST Framework session authentication", "Only the plans and places APIs are routed; accounts and relationship views are not exposed here"] }
+  ]
+}

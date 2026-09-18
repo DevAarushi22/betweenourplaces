@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 
 from relationships.services import get_user_relationship
 
+from .models import Plan
 from .serializers import (
     PlanCreateSerializer,
     PlanFinalizeSerializer,
@@ -77,6 +78,29 @@ class PlanListCreateView(APIView):
             },
             status=status.HTTP_201_CREATED,
         )
+
+
+class PlanToPlanView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        relationship = get_user_relationship(request.user)
+
+        if relationship is None:
+            return Response(
+                {"detail": "You are not part of a relationship."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        plans = relationship.plans.filter(
+            planner=request.user,
+            status=Plan.Status.WAITING_FOR_PLANNER,
+        ).order_by("date", "created_at")
+
+        serializer = PlanListSerializer(plans, many=True)
+
+        return Response(serializer.data)
+
 
 class PlanFinalizeView(APIView):
     permission_classes = [IsAuthenticated]
